@@ -457,7 +457,7 @@ void main_loop(struct scd_par *scd)
     time(&rawtime);
     timeinfo = localtime(&rawtime);
 
-    strftime(buffer,80,"%Y-%m-%d %H:%M:%S",timeinfo);
+    strftime(buffer,80,"%Y-%m-%d %H-%M-%S",timeinfo);
     strcpy(filename,buffer);
     strcat(filename," scd30.csv");
     
