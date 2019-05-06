@@ -377,7 +377,7 @@ bool do_dylos(struct scd_par *scd)
  * 
  * @param scd : pointer to SCD30 parameters
  ****************************************************************/
-void do_output(struct scd_par *scd)
+void do_output(struct scd_par *scd,int &nb)
 {
     char buf[30],t;
     float index, dew, temp, hum;
@@ -412,9 +412,10 @@ void do_output(struct scd_par *scd)
     
      p_printf(WHITE, (char *) "CO2: %4d PPM\tHumidity: %3.2f %%RH  Temperature: %3.2f *%c  ",co2, hum,temp,t);
      
-     outfile << co2 << "," << hum << "," << temp;
+     outfile << std::to_string(nb) << "," << co2 << "," << hum << "," << temp;
      outfile.close();
-     
+     nb++;
+
      if (scd->heatindex) p_printf(WHITE, (char *) "heatindex: %3.2f *%c ", index, t);
      if (scd->dewpoint)  p_printf(WHITE, (char *) "dew-point: %3.2f *%c ", dew, t);
      
@@ -439,6 +440,7 @@ void main_loop(struct scd_par *scd)
     char    buf[10];
     int     loop_set, reset_retry = RESET_RETRY;
     bool    first=true;
+    int nb = 0;
 
    
     /* get the serial number (check that communication works) */
@@ -461,7 +463,7 @@ void main_loop(struct scd_par *scd)
             closeout();
         }
         
-        do_output(scd);
+        do_output(scd,nb);
             
         return;
     }
@@ -478,7 +480,7 @@ void main_loop(struct scd_par *scd)
         if(MySensor.dataAvailable() == true)
         {
             reset_retry = RESET_RETRY;
-            do_output(scd);
+            do_output(scd,nb);
         }
         else
         {
