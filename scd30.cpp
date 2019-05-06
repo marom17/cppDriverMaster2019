@@ -56,7 +56,6 @@
  **********************************************************************/
 
 # include "SCD30.h"
-# include <time.h>
 #include <iostream>
 #include <fstream>
 
@@ -378,14 +377,14 @@ bool do_dylos(struct scd_par *scd)
  * 
  * @param scd : pointer to SCD30 parameters
  ****************************************************************/
-void do_output(struct scd_par *scd,char *filename)
+void do_output(struct scd_par *scd)
 {
     char buf[30],t;
     float index, dew, temp, hum;
     uint16_t co2;
     std::ofstream outfile;
 
-    outfile.open(filename,std::ios::app);
+    outfile.open("/var/local/scd30");
 
     if (scd->timestamp) 
     {
@@ -412,16 +411,8 @@ void do_output(struct scd_par *scd,char *filename)
     }
     
      p_printf(WHITE, (char *) "CO2: %4d PPM\tHumidity: %3.2f %%RH  Temperature: %3.2f *%c  ",co2, hum,temp,t);
-     time_t rawtime;
-     struct tm * timeinfo;
-     char buffer [19];
-
-     time(&rawtime);
-     timeinfo = localtime(&rawtime);
-
-     strftime(buffer,80,"%Y-%m-%d %H:%M:%S",timeinfo);
      
-     outfile << buffer << "," << co2 << "," << hum << "," << temp << "\n";
+     outfile << co2 << "," << hum << "," << temp;
      outfile.close();
      
      if (scd->heatindex) p_printf(WHITE, (char *) "heatindex: %3.2f *%c ", index, t);
@@ -449,23 +440,6 @@ void main_loop(struct scd_par *scd)
     int     loop_set, reset_retry = RESET_RETRY;
     bool    first=true;
 
-    time_t rawtime;
-    struct tm * timeinfo;
-    char buffer [19];
-    char filename [29];
-
-    time(&rawtime);
-    timeinfo = localtime(&rawtime);
-
-    strftime(buffer,80,"%Y-%m-%d %H-%M-%S",timeinfo);
-    strcpy(filename,buffer);
-    strcat(filename," scd30.csv");
-    
-    std::ofstream outfile;
-    outfile.open(filename,std::ios::app);
-
-    outfile << "Time,#CO2,#Hum,#Temp\n";
-    outfile.close();
    
     /* get the serial number (check that communication works) */
     if(MySensor.getSerialNumber(buf) == false)
@@ -487,7 +461,7 @@ void main_loop(struct scd_par *scd)
             closeout();
         }
         
-        do_output(scd,filename);
+        do_output(scd);
             
         return;
     }
@@ -504,7 +478,7 @@ void main_loop(struct scd_par *scd)
         if(MySensor.dataAvailable() == true)
         {
             reset_retry = RESET_RETRY;
-            do_output(scd,filename);
+            do_output(scd);
         }
         else
         {
