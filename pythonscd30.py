@@ -22,7 +22,7 @@ class NewDataSCD(FileSystemEventHandler):
                         now = datetime.now()
                         date_time = now.strftime("%Y-%m-%d %H-%M-%S")
                         data = newData.split(",")
-                        txt = date_time + "," + data[1] + "," + data[2] + "," + data[3]
+                        txt = date_time + "," + data[1] + "," + data[2] + "," + data[3] + "\n"
                         print(txt)
                         f = open(filename,"a")
                         f.write(txt)
@@ -35,7 +35,7 @@ class NewDataSCD(FileSystemEventHandler):
 
 if __name__ == "__main__":
     f = open(filename,"a")
-    f.write("Time,#CO2,#Hum,#Temp")
+    f.write("Time,#CO2,#Hum,#Temp\n")
     f.close()
     event_handler = NewDataSCD()
     observer = Observer()
