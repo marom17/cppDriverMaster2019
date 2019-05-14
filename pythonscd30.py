@@ -20,7 +20,7 @@ class NewDataSCD(FileSystemEventHandler):
                     f.close()
                     if(self.lastData not in newData):
                         now = datetime.now()
-                        date_time = now.strftime("%Y-%m-%d %H-%M-%S")
+                        date_time = now.strftime("%Y-%m-%d %H:%M:%S")
                         data = newData.split(",")
                         txt = date_time + "," + data[1] + "," + data[2] + "," + data[3] + "\n"
                         print(txt)
